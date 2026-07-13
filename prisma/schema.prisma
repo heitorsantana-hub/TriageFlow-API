@@ -1,0 +1,55 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+datasource db {
+  provider = "postgresql"
+  url = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+// Configuração ENUM
+enum TicketStatus {
+  aberto
+  em_andamento
+  resolvido
+}
+
+enum TicketPrioridade{
+  BAIXA
+  MEDIA
+  ALTA
+}
+
+enum TicketCanal{
+  ouvidoria
+  sac
+  suporte_tecnico
+  financeiro
+  fora_do_escopo
+}
+
+// Tabelas
+model Usuario{
+  id        Int      @id @default(autoincrement())
+  name String
+  email String @unique
+  createdAt DateTime @default(now())
+  updateAt DateTime @updatedAt 
+}
+
+model Ticket {
+  id        Int      @id @default(autoincrement())
+  textoSolicitacao String
+  canal TicketCanal
+  status TicketStatus @default(aberto)
+  prioridade TicketPrioridade
+  createdAt DateTime @default(now())
+  updateAt DateTime @updatedAt 
+}
+
