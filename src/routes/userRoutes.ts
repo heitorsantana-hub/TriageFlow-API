@@ -13,8 +13,8 @@ userRoutes.get("/", userController.getAll);
 // GET /users/:id - Busca um usuário específico
 userRoutes.get("/:id", userController.getUserById);
 
-// PUT /users/:id - Atualiza um usuário[cite: 1]
+// PUT /users/:id - Atualiza um usuário
 userRoutes.put("/:id", userController.updateUser);
 
-// DELETE /users/:id - Deleta um usuário[cite: 1]
+// DELETE /users/:id - Deleta um usuário
 userRoutes.delete("/:id", userController.delete);
