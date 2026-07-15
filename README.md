@@ -47,101 +47,126 @@ cd TriageFlow-API
 
 ### 2. Configurar a Chave da IA
 
-Crie um arquivo chamado .env na raiz do projeto e insira apenas a sua chave de acesso do Google AI Studio (o banco será configurado automaticamente pelo Docker):
+Crie um arquivo chamado `.env` na raiz do projeto e insira apenas a sua chave de acesso do Google AI Studio (o banco será configurado automaticamente pelo Docker):
 
-Snippet de código
-
-```bash
-GEMINI_API_KEY="SUA_CHAVE_DE_ACESSO_DO_GOOGLE_AI_STUDIO" 3. Subir os Containers
+```env
+GEMINI_API_KEY="SUA_CHAVE_DE_ACESSO_DO_GOOGLE_AI_STUDIO"
 ```
+
+### 3. Subir os Containers
 
 Com o Docker Desktop aberto no seu sistema, execute o comando abaixo no terminal da raiz do projeto:
 
-Bash
+```bash
 docker compose up --build
-💡 Esse comando irá baixar a imagem do Postgres, configurar o banco de dados, aplicar as tabelas (migrations do Prisma), preparar a API e iniciá-la na porta de acesso público.
+```
 
-A API estará online e pronta em: http://localhost:8989
+> 💡 _Esse comando irá baixar a imagem do Postgres, configurar o banco de dados, aplicar as tabelas (migrations do Prisma), preparar a API e iniciá-la na porta de acesso público._
 
-🛠️ Como Rodar a Aplicação Localmente (Sem Docker)
-Se preferir rodar direto no seu sistema operacional, certifique-se de ter o Node.js (v20+) e o PostgreSQL ativos localmente.
+A API estará online e pronta em: **`http://localhost:8989`**
 
-Instale as dependências:
+---
 
-Bash
+## 🛠️ Como Rodar a Aplicação Localmente (Sem Docker)
+
+Se preferir rodar direto no seu sistema operacional, certifique-se de ter o **Node.js (v20+)** e o **PostgreSQL** ativos localmente.
+
+1. Instale as dependências:
+
+```bash
 npm install
-Crie e configure o arquivo .env na raiz:
 
-Snippet de código
+```
+
+2. Crie e configure o arquivo `.env` na raiz:
+
+```env
 PORT=8989
 DATABASE_URL="postgresql://usuario:senha@localhost:5432/triageflow_db?schema=public"
 GEMINI_API_KEY="SUA_CHAVE_DE_ACESSO_DO_GOOGLE_AI_STUDIO"
-Execute as Migrations do Prisma para criar as tabelas:
+```
 
-Bash
+3. Execute as Migrations do Prisma para criar as tabelas:
+
+```bash
 npx prisma db push
-Inicie o servidor em modo de desenvolvimento:
+```
 
-Bash
+4. Inicie o servidor em modo de desenvolvimento:
+
+```bash
 npm run dev
-A API estará online e pronta em: http://localhost:8989
+```
 
-🧪 Como Rodar os Testes Automatizados
+A API estará online e pronta em: **`http://localhost:8989`**
+
+---
+
+## 🧪 Como Rodar os Testes Automatizados
+
 Para executar a suite completa de testes unitários e de integração desenvolvidos com Jest (incluindo mock da IA e validação de todas as regras de negócio), utilize:
 
-Bash
+```bash
 npm test
-🔌 Como Testar as Rotas Usando o api.http
-Na raiz do projeto, você encontrará o arquivo api.http. Ele funciona como uma coleção de rotas interativa de teste (alternativa ao Postman) direto no seu editor de código.
+```
 
-Abra o VS Code e vá na aba de extensões (Ctrl+Shift+X ou Cmd+Shift+X).
+---
 
-Pesquise e instale a extensão oficial REST Client (criada por Huachao Mao).
+## 🔌 Como Testar as Rotas Usando o `api.http`
 
-Abra o arquivo api.http na raiz.
+Na raiz do projeto, você encontrará o arquivo **`api.http`**. Ele funciona como uma coleção de rotas interativa de teste (alternativa ao Postman) direto no seu editor de código.
 
-Clique na opção cinza Send Request que aparecerá sobreposta a cada rota. A resposta detalhada em JSON aparecerá na aba direita instantaneamente!
+1. Abra o VS Code e vá na aba de extensões (`Ctrl+Shift+X` ou `Cmd+Shift+X`).
+2. Pesquise e instale a extensão oficial **REST Client** (criada por _Huachao Mao_).
+3. Abra o arquivo **`api.http`** na raiz.
+4. Clique na opção cinza **`Send Request`** que aparecerá sobreposta a cada rota. A resposta detalhada em JSON aparecerá na aba direita instantaneamente!
 
-🛣️ API Endpoints
-🔍 Monitoramento
-GET /health - Verifica se a API está saudável e online (Retorna 200 OK).
+---
 
-🎫 Módulo de Tickets
-POST /tickets - Cria e classifica um ticket automaticamente via IA.
+## 🛣️ API Endpoints
 
-Envio (Body JSON):
+### 🔍 Monitoramento
 
-JSON
+- **`GET /health`** - Verifica se a API está saudável e online (Retorna `200 OK`).
+
+### 🎫 Módulo de Tickets
+
+- **`POST /tickets`** - Cria e classifica um ticket automaticamente via IA.
+- **Envio (Body JSON):**
+
+```json
 {
-"textoSolicitacao": "Quero denunciar de forma anônima uma fraude financeira em andamento no departamento de contas."
+  "textoSolicitacao": "Quero denunciar de forma anônima uma fraude financeira em andamento no departamento de contas."
 }
-Resposta (IA):
+```
 
-JSON
+- **Resposta (IA):**
+
+```json
 {
-"id": 1,
-"textoSolicitacao": "Quero denunciar de forma anônima uma fraude financeira em andamento no departamento de contas.",
-"canal": "ouvidoria",
-"prioridade": "ALTA",
-"status": "aberto",
-"createdAt": "2026-07-15T15:52:00.000Z"
+  "id": 1,
+  "textoSolicitacao": "Quero denunciar de forma anônima uma fraude financeira em andamento no departamento de contas.",
+  "canal": "ouvidoria",
+  "prioridade": "ALTA",
+  "status": "aberto",
+  "createdAt": "2026-07-15T15:52:00.000Z"
 }
-GET /tickets - Lista todos os tickets criados.
+```
 
-GET /tickets/:id - Busca detalhes de um ticket específico.
+- **`GET /tickets`** - Lista todos os tickets criados.
+- **`GET /tickets/:id`** - Busca detalhes de um ticket específico.
+- **`PUT /tickets/:id/status`** - Atualiza exclusivamente o status do ticket (ex: para `em_atendimento` ou `resolvido`).
 
-PUT /tickets/:id/status - Atualiza exclusivamente o status do ticket (ex: para em_atendimento ou resolvido).
+### 👤 Módulo de Usuários
 
-👤 Módulo de Usuários
-POST /users - Cadastro de novo usuário.
+- **`POST /users`** - Cadastro de novo usuário.
+- **`GET /users`** - Listagem de todos os usuários.
+- **`GET /users/:id`** - Detalhes do usuário por ID.
+- **`PUT /users/:id`** - Atualização de dados.
+- **`DELETE /users/:id`** - Remoção lógica/física do usuário.
 
-GET /users - Listagem de todos os usuários.
+---
 
-GET /users/:id - Detalhes do usuário por ID.
+## 📄 Licença
 
-PUT /users/:id - Atualização de dados.
-
-DELETE /users/:id - Remoção lógica/física do usuário.
-
-📄 Licença
 Este projeto está sob a licença MIT.
