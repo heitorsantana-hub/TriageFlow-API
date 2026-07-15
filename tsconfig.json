@@ -6,7 +6,7 @@
     "strict": true,
     "lib": ["ESNext"],
     "target": "ESNext",
-    "module": "nodenext",
+    "module": "NodeNext",
     "moduleResolution": "NodeNext",
 
 
@@ -14,13 +14,21 @@
     "rootDir": "./src",
     "outDir": "./build",
 
-    "types": ["node"],
+    "types": ["jest","node"],
 
 
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noEmitOnError": true,
-    "verbatimModuleSyntax": true
+    "verbatimModuleSyntax": false,
+    "isolatedModules": true,
+  },
+
+  "ts-node": {
+    "compilerOptions": {
+      "module": "CommonJS",
+      "moduleResolution": "Node"
+    }
   },
 
   "include": ["./src"],

@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: contato_seguro_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_DB: contato_seguro
+    ports:
+      - "8989:8989"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d contato_seguro"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build: .
+    container_name: contato_seguro_api
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      # Conecta no serviço 'db' usando as credenciais acima
+      - DATABASE_URL=postgresql://postgres:mysecretpassword@db:5432/contato_seguro?schema=public
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - LOG_LEVEL=info
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:

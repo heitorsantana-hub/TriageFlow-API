@@ -1,0 +1,84 @@
+### Configurações de Variáveis
+@baseUrl = http://localhost:8989
+
+# ==========================================
+# 🟢 HEALTH CHECK
+# ==========================================
+
+### Verificar se a API está online
+GET {{baseUrl}}/health
+
+###
+
+# ==========================================
+# 👥 MÓDULO DE USUÁRIOS
+# ==========================================
+
+### Criar um Novo Usuário
+# @name createUser
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+  "name": "Heitor Reis",
+  "email": "heitor.reis@example.com"
+}
+
+###
+
+### Listar Todos os Usuários
+GET {{baseUrl}}/users
+
+###
+
+### Buscar Usuário por ID (Substitua o '1' pelo ID gerado)
+GET {{baseUrl}}/users/66
+
+###
+
+### Atualizar Usuário por ID (Substitua o '1' pelo ID gerado)
+PUT {{baseUrl}}/users/66
+Content-Type: application/json
+
+{
+  "email": "heitor.atualizado@example.com"
+}
+
+###
+
+### Deletar Usuário por ID (Substitua o '1' pelo ID gerado)
+DELETE {{baseUrl}}/users/66
+
+###
+
+# ==========================================
+# 🎫 MÓDULO DE TICKETS
+# ==========================================
+
+### Criar um Ticket de Suporte Técnico (IA deve classificar)
+POST {{baseUrl}}/tickets
+Content-Type: application/json
+
+{
+  "textoSolicitacao": "O sistema está fora do ar e meu computador travou, preciso de ajuda urgente!"
+}
+
+###
+
+### Criar um Ticket de Financeiro (IA deve classificar)
+POST {{baseUrl}}/tickets
+Content-Type: application/json
+
+{
+  "textoSolicitacao": "Preciso conversar com o financeiro, por questões de pagamento na empresa"
+}
+
+###
+
+### Criar um Ticket de Ouvidoria (IA deve classificar)
+POST {{baseUrl}}/tickets
+Content-Type: application/json
+
+{
+  "textoSolicitacao": "Quero fazer uma denúncia confidencial sobre um caso de assédio moral no meu setor."
+}
