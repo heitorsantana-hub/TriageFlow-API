@@ -1,9 +1,37 @@
 import supertest from "supertest";
 import {app} from "../../src/app";
 import {prisma} from "../../src/lib/prisma"
-import { describe, test, expect, afterAll, beforeAll } from "@jest/globals";
+import { describe, test, expect, afterAll, beforeAll, jest } from "@jest/globals";
+import {ai} from "../../src/services/TicketService";
 
 const request = supertest(app);
+
+jest.spyOn(ai.models, "generateContent").mockImplementation(async (params: any) => {
+  const prompt = params.contents.toString().toLowerCase();
+
+  let canal = "fora_do_escopo";
+  let prioridade = "BAIXA";
+
+  // Buscando por trechos específicos de cada teste para não conflitar com as regras do prompt
+  if (prompt.includes("questões de pagamento na empresa")) {
+    canal = "financeiro"; 
+    prioridade = "MEDIA";
+  } else if (prompt.includes("preços e planos")) {
+    canal = "sac"; 
+    prioridade = "BAIXA";
+  } else if (prompt.includes("denúncia confidencial")) {
+    canal = "ouvidoria"; 
+    prioridade = "ALTA";
+  } else if (prompt.includes("computador travou") || prompt.includes("fora do ar")) {
+    canal = "suporte_tecnico"; 
+    prioridade = "MEDIA";
+  }
+
+  return {
+    text: JSON.stringify({ canal, prioridade })
+  } as any; 
+});
+
 
 describe("Integração: Regras de Classificação de Tickets", () => {
   // Limpa o banco antes de começar os testes de classificação

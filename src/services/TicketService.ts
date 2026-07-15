@@ -1,10 +1,11 @@
 import {GoogleGenAI} from "@google/genai";
 import {TicketRepository} from "../repositories/TicketRepository.js";
+import {logger} from "../lib/logger.js";
 
 const ticketRepository = new TicketRepository();
 
 // Inicializar a IA
-const ai = new GoogleGenAI({apiKey: process.env.GEMINI_API_KEY});
+export const ai = new GoogleGenAI({apiKey: process.env.GEMINI_API_KEY});
 
 export class TicketService {
 
@@ -44,6 +45,18 @@ export class TicketService {
       const iaResponseText = response.text ? response.text.trim() : "{}";
       const classification = JSON.parse(iaResponseText);
 
+      // Validação de dados
+       const validCanals = ["ouvidoria", "sac", "suporte_tecnico", "financeiro", "fora_do_escopo"];
+      const validPriorities = ["ALTA", "MEDIA", "BAIXA"];
+
+      if (classification.canal && validCanals.includes(classification.canal)) {
+        classification.canal = classification.canal as "ouvidoria" | "sac" | "suporte_tecnico" | "financeiro" | "fora_do_escopo";
+      }
+
+      if (classification.prioridade && validPriorities.includes(classification.prioridade.toUpperCase())) {
+        classification.prioridade = classification.prioridade.toUpperCase() as "ALTA" | "MEDIA" | "BAIXA";
+      }
+
       // Juntar todos os dados
       const finalTicketData = {
         textoSolicitacao: ticketData.textoSolicitacao,
@@ -54,9 +67,18 @@ export class TicketService {
       // Salvando no banco tudo
       return await ticketRepository.createTicket(finalTicketData);
     } catch (error) {
-      
+      logger.error(
+        { err: error, textoSolicitacao: ticketData.textoSolicitacao },
+        "Falha ao classificar ticket com o Gemini. Aplicando fallback 'fora_do_escopo'"
+      );
     }
-      
+    
+    // Criação do Fallback
+    return await ticketRepository.createTicket({
+        textoSolicitacao: ticketData.textoSolicitacao,
+        canal: "fora_do_escopo",
+        prioridade: "BAIXA"
+      });
   }
 
   // Listar todos os tickets

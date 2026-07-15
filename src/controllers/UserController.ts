@@ -3,6 +3,7 @@ import { UserService } from "../services/UserService.js";
 import { logger } from "../lib/logger.js"; // ✨ Importando seu logger estruturado
 
 const userService = new UserService();
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Expressão regular para validar e-mail
 
 export class UserController {
 
@@ -12,6 +13,14 @@ export class UserController {
       const data = {
         name: req.body.name,
         email: req.body.email,
+      }
+
+      if (!data.name || typeof data.name !== "string" || data.name.trim() === "") {
+        return res.status(400).json({ error: "O nome é obrigatório e deve ser um texto válido." });
+      }
+
+      if (!data.email || !emailRegex.test(data.email)) {
+        return res.status(400).json({ error: "O e-mail fornecido é inválido ou está vazio." });
       }
 
       const user = await userService.createUser(data);
@@ -92,8 +101,21 @@ export class UserController {
       const { name, email } = req.body;
       const dataUpdate: { name?: string; email?: string } = {};
 
-      if (name !== undefined) dataUpdate.name = name;
-      if (email !== undefined) dataUpdate.email = email;
+
+      if (name !== undefined) {
+        if (typeof name !== "string" || name.trim() === "") {
+          return res.status(400).json({ error: "O nome não pode ser um texto vazio." });
+        }
+        dataUpdate.name = name.trim();
+      }
+
+      if (email !== undefined) {
+        if (!emailRegex.test(email)) {
+          return res.status(400).json({ error: "O e-mail fornecido é inválido." });
+        }
+        dataUpdate.email = email.trim();
+      }
+
 
       if (Object.keys(dataUpdate).length === 0) {
         return res.status(400).json({ error: "Nenhum dado foi fornecido para atualização." });
@@ -102,7 +124,7 @@ export class UserController {
       const updatedUser = await userService.updateUser(idNumber, dataUpdate);
       return res.status(200).json(updatedUser);
     } catch (error) {
-      // ✨ Corrigido: Tratamento de erro e log estruturado adicionados
+     
       logger.error({ err: error }, "Erro ao atualizar o usuário");
       return res.status(400).json({ error: "Erro ao atualizar o usuário" });
     }
